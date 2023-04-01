@@ -19,7 +19,6 @@ public class Program
     public static Task Main(string[] args) => new Program().MainAsync();
     private DiscordSocketClient _client;
     private string path = System.IO.Directory.GetCurrentDirectory().ToString() + @"\Players Log.txt";
-    private string debugpath  = @"C:\Users\fuzin\source\repos\Discord tracking bot\Discord tracking bot\Players Log.txt";
 
 
 
@@ -54,6 +53,7 @@ public class Program
     {
         await Task.Run(async () =>
         {
+            
             //Activity is not from a Bot.
             if (!socketMessage.Author.IsBot)
             {
@@ -105,7 +105,7 @@ public class Program
                            await socketChannel.SendMessageAsync("You're already part of the Challenge");
                     }
                 }
-                if (socketMessage.Content.ToString().ToUpper().Contains("TRACK"))
+                if (socketMessage.Content.ToString().ToUpper().StartsWith("TRACK"))
                 {
                     await socketChannel.SendMessageAsync($"New Miles from {socketMessage.Author}!");
                     string[] Message = socketMessage.Content.ToString().Split(" ");
