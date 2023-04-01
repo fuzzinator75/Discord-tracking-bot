@@ -128,8 +128,8 @@ public class Program
                                 if (lineArray[0] == socketMessage.Author.ToString())
                                 {
                                     Console.WriteLine($"Current Distance is {lineArray[1]} For user {lineArray[0]} current user message {socketMessage.Author.ToString()} is adding {Message[1]} to their total!");
-                                    int result = Int32.Parse(lineArray[1]);
-                                    result += Int32.Parse(Message[1]);
+                                    float result = float.Parse(lineArray[1]);
+                                    result += float.Parse(Message[1]);
                                     lineArray[1] = result.ToString();
                                     FileRead[i] = lineArray[0] + ":  " + lineArray[1];
                                     await socketChannel.SendMessageAsync($"You're new distance is {FileRead[i]} Miles!");
