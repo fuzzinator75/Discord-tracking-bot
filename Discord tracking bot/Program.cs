@@ -18,16 +18,22 @@ public class Program
 {
     public static Task Main(string[] args) => new Program().MainAsync();
     private DiscordSocketClient _client;
-    string path  = @"C:\Users\fuzin\source\repos\Discord tracking bot\Discord tracking bot\Players Log.txt";
+    private string path = System.IO.Directory.GetCurrentDirectory().ToString() + @"\Players Log.txt";
+    private string debugpath  = @"C:\Users\fuzin\source\repos\Discord tracking bot\Discord tracking bot\Players Log.txt";
+
 
 
     public async Task MainAsync()
     {
+
         var config = new DiscordSocketConfig()
         {
             GatewayIntents = GatewayIntents.All
         };
 
+        if (!File.Exists(path))
+            File.Create(path);
+        File.SetAttributes(path, FileAttributes.Normal);
         _client = new DiscordSocketClient(config);
 
         _client.Log += Log;
@@ -37,8 +43,6 @@ public class Program
         var token = "MTA5MTQ0OTM4MjQ0NjA0NzI5NA.GC1_Mf.WvJw_LevRKut70_pKSZOaMIVQqvdakG6gt_DgA";
 
         await _client.LoginAsync(TokenType.Bot, token);
-
-
 
         await _client.StartAsync();
 
@@ -61,7 +65,45 @@ public class Program
                 //Do Something and send a response here.
                 //socketChannel.SendMessageAsync("YOUR RESPONSE");
                 Console.WriteLine("User: "+ socketMessage.Author + " has Said: " + socketMessage.Content);
-                if (socketMessage.Content.ToString().IndexOf("Track") != -1)
+                if (socketMessage.Content.ToString().ToUpper().Contains("ADDME"))
+                {
+                    using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+                    {
+                        List<string> FileRead = new List<string>();
+                        bool Check = false;
+                        using (StreamReader sr = new StreamReader(fs))
+                        {
+                            while (sr.Peek() >= 0)
+                            {
+                                FileRead.Add(sr.ReadLine());
+                            }
+                            for (int i = 0; i < FileRead.Count; i++)
+                            {
+                                if (FileRead[i].Contains(socketMessage.Author.ToString()))
+                                    Check= true;
+                            }
+                            workingList = FileRead;
+                            sr.Close();
+                        }
+                        if (!Check)
+                        {
+                            await socketChannel.SendMessageAsync($"Adding {socketMessage.Author} to the Challenge!");
+                            workingList.Add(socketMessage.Author.ToString() + ":  " + "0");
+
+                            using (StreamWriter sw = new StreamWriter(path))
+                            {
+                                for (int i = 0; i < workingList.Count; i++)
+                                {
+                                    sw.WriteLine(workingList[i]);
+                                }
+                                sw.Close();
+                            }
+                        }
+                        else
+                           await socketChannel.SendMessageAsync("You're already part of the Challenge");
+                    }
+                }
+                if (socketMessage.Content.ToString().ToUpper().Contains("TRACK"))
                 {
                     await socketChannel.SendMessageAsync($"New Miles from {socketMessage.Author}!");
                     string[] Message = socketMessage.Content.ToString().Split(" ");
@@ -79,18 +121,19 @@ public class Program
 
                             for (int i = 0; i < FileRead.Count; i++)
                             {
-                                Console.WriteLine(FileRead[i] + "Before change");
+
                                 string[] lineArray = FileRead[i].Split(':');
+                                Console.WriteLine(i + ": " + lineArray[0] + "" + lineArray[1]); 
                                 if (lineArray[0] == socketMessage.Author.ToString())
                                 {
-                                    Console.WriteLine($"Current Distance is {lineArray[1]}");
+                                    Console.WriteLine($"Current Distance is {lineArray[1]} For user {lineArray[0]} current user message {socketMessage.Author.ToString()}");
                                     int result = Int32.Parse(lineArray[1]);
+                                    Console.WriteLine(result + ": " + socketMessage.Author);
                                     result += Int32.Parse(Message[1]);
                                     lineArray[1] = result.ToString();
-                                    FileRead[i] = lineArray[0] + ":" + lineArray[1];
-                                    await socketChannel.SendMessageAsync($"You're new distance is {FileRead[1]}.");
+                                    FileRead[i] = lineArray[0] + ":  " + lineArray[1];
+                                    await socketChannel.SendMessageAsync($"You're new distance is {FileRead[i]} Miles!");
                                 }
-                                Console.WriteLine(FileRead[i] + "after change");
                             }
                             workingList = FileRead;
                             sr.Close();
