@@ -32,8 +32,7 @@ public class Program
         };
 
         if (!File.Exists(path))
-            File.Create(path);
-        File.SetAttributes(path, FileAttributes.Normal);
+            File.Create(path).Close();
         _client = new DiscordSocketClient(config);
 
         _client.Log += Log;
@@ -77,14 +76,17 @@ public class Program
                             {
                                 FileRead.Add(sr.ReadLine());
                             }
+
                             for (int i = 0; i < FileRead.Count; i++)
                             {
                                 if (FileRead[i].Contains(socketMessage.Author.ToString()))
                                     Check= true;
                             }
-                            workingList = FileRead;
                             sr.Close();
+                            workingList = FileRead;
                         }
+
+
                         if (!Check)
                         {
                             await socketChannel.SendMessageAsync($"Adding {socketMessage.Author} to the Challenge!");
@@ -123,12 +125,10 @@ public class Program
                             {
 
                                 string[] lineArray = FileRead[i].Split(':');
-                                Console.WriteLine(i + ": " + lineArray[0] + "" + lineArray[1]); 
                                 if (lineArray[0] == socketMessage.Author.ToString())
                                 {
-                                    Console.WriteLine($"Current Distance is {lineArray[1]} For user {lineArray[0]} current user message {socketMessage.Author.ToString()}");
+                                    Console.WriteLine($"Current Distance is {lineArray[1]} For user {lineArray[0]} current user message {socketMessage.Author.ToString()} is adding {Message[1]} to their total!");
                                     int result = Int32.Parse(lineArray[1]);
-                                    Console.WriteLine(result + ": " + socketMessage.Author);
                                     result += Int32.Parse(Message[1]);
                                     lineArray[1] = result.ToString();
                                     FileRead[i] = lineArray[0] + ":  " + lineArray[1];
