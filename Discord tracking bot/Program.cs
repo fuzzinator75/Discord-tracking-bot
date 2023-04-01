@@ -89,6 +89,12 @@ public class Program
                     for(int i=0;i<report.Count;i++) 
                     await socketChannel.SendMessageAsync(report[i]);
                 }
+                if (socketMessage.Content.ToString().ToUpper().Contains("KILO"))
+                {
+                    string[] Message = socketMessage.Content.ToString().Split(" ");
+                    string report = calcKilo(Message);
+                    await socketChannel.SendMessageAsync($"{Message[1]} Kilometers is {report} in Miles.");  
+                }
 
 
 
@@ -96,6 +102,13 @@ public class Program
         });
     }
 
+    public string calcKilo(string[] Message)
+    {
+
+        float kilo = float.Parse(Message[1]);
+        float result = kilo * 0.621371F;
+        return result.ToString();
+    }
     public string AddPlayer(string Player)
     {
             List<string> FileRead = new List<string>();
@@ -179,7 +192,7 @@ public class Program
                         sw.WriteLine(FileRead[i]);
                     }
                 }
-                return $"You're new distance is {result} Miles!";
+                return $"Your new distance is {result} Miles!";
 
             }
         }
