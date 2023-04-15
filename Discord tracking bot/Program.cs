@@ -3,13 +3,12 @@ using Discord.Commands;
 using Discord.Net;
 using Discord.Rest;
 using Discord.WebSocket;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System;
 using System.Reflection;
 using System.IO;
 using System.Numerics;
 using System.Threading.Channels;
-
 
 
 // See https://aka.ms/new-console-template for more information
@@ -26,6 +25,9 @@ public class Program
     public async Task MainAsync()
     {
 
+            string text = File.ReadAllText(@"./Token.json");
+            var token = JsonSerializer.Deserialize<Token>(text);
+
         var config = new DiscordSocketConfig()
         {
             GatewayIntents = GatewayIntents.All
@@ -37,9 +39,7 @@ public class Program
 
         _client.Log += Log;
 
-        var token = "MTA5MTQ0OTM4MjQ0NjA0NzI5NA.GC1_Mf.WvJw_LevRKut70_pKSZOaMIVQqvdakG6gt_DgA";
-
-        await _client.LoginAsync(TokenType.Bot, token);
+        await _client.LoginAsync(TokenType.Bot, token.token);
         await _client.StartAsync();
         var channel = await _client.GetChannelAsync(1091435186241146995) as IMessageChannel;
         await channel!.SendMessageAsync("Welcome to the Milage Tracker Bot!");
@@ -223,5 +223,9 @@ public class Program
     {
         Console.WriteLine(msg.ToString());
         return Task.CompletedTask;
+    }
+    public class Token
+    {
+        public string token { get; set; }
     }
 }
