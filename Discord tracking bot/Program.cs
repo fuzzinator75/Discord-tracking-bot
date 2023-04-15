@@ -18,8 +18,8 @@ public class Program
 {
     public static Task Main(string[] args) => new Program().MainAsync();
     private DiscordSocketClient? _client;
-    private string path = System.IO.Directory.GetCurrentDirectory().ToString() + @"\Players Log.txt";
-
+    //private string path = System.IO.Directory.GetCurrentDirectory().ToString() + @"\Players Log.txt";
+    private string path = System.IO.Directory.GetCurrentDirectory().ToString() + @"\Players Log Test.txt";
 
 
     public async Task MainAsync()
@@ -42,7 +42,7 @@ public class Program
         await _client.LoginAsync(TokenType.Bot, token.token);
         await _client.StartAsync();
         var channel = await _client.GetChannelAsync(1091435186241146995) as IMessageChannel;
-        await channel!.SendMessageAsync("Welcome to the Milage Tracker Bot!");
+       // await channel!.SendMessageAsync("Welcome to the Milage Tracker Bot!");
 
         _client.MessageReceived += ClientOnMessageReceived;
         
@@ -86,8 +86,11 @@ public class Program
                     List<string> report = PostScores();
                     await socketChannel.SendMessageAsync("Here is the Current Leaderboard");
                     await socketChannel.SendMessageAsync("===============================");
-                    for(int i=0;i<report.Count;i++) 
-                    await socketChannel.SendMessageAsync(report[i]);
+                    for (int i = 0; i < report.Count; i++)
+                    {
+                        Thread.Sleep(750);
+                        await socketChannel.SendMessageAsync(report[i]);
+                    }
                 }
                 if (socketMessage.Content.ToString().ToUpper().Contains("KILO"))
                 {
@@ -152,7 +155,7 @@ public class Program
     {
         try
         {
-            float result = 0;
+            double result = 0;
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
             {
                 List<string> FileRead = new List<string>();
@@ -161,7 +164,6 @@ public class Program
                     while (sr.Peek() >= 0)
                     {
                         FileRead.Add(sr.ReadLine());
-
                     }
 
                     for (int i = 0; i < FileRead.Count; i++)
@@ -170,7 +172,8 @@ public class Program
                         string[] lineArray = FileRead[i].Split(':');
                         if (lineArray[0] == Player)
                         {
-                            result = float.Parse(Message[1]) + float.Parse(lineArray[1]);
+                            result = double.Parse(Message[1]) + double.Parse(lineArray[1]);
+                            result = Math.Round(result , 2);
                             lineArray[1] = result.ToString();
                             FileRead[i] = lineArray[0] + ":  " + lineArray[1];
                             Console.WriteLine($"Current Distance is {lineArray[1]} For user {lineArray[0]} current user message {Message[0]}");
@@ -183,8 +186,10 @@ public class Program
                         }
                     }
                     sr.Close();
-
                 }
+
+                FileRead.Sort(CompareDistances);
+
                 using (StreamWriter sw = new StreamWriter(path))
                 {
                     for (int i = 0; i < FileRead.Count; i++)
@@ -224,7 +229,35 @@ public class Program
         Console.WriteLine(msg.ToString());
         return Task.CompletedTask;
     }
-    public class Token
+
+    private static int CompareDistances(string x, string y)
+    {
+        if (x == null)
+        {
+            if (y == null)
+                return 0;
+            else
+                return -1;
+        }
+        else
+        {
+            if (y == null)
+                return 1;
+            else
+            {
+                string[] xArray = x.Split(":");
+                string[] yArray = y.Split(":");
+                float xFloat = float.Parse(xArray[1]);
+                float yFloat = float.Parse(yArray[1]);
+                int retval = yFloat.CompareTo(xFloat);
+                if (retval != 0) return retval;
+                else return xFloat.CompareTo(yFloat);
+            }
+        }
+    }
+
+
+public class Token
     {
         public string token { get; set; }
     }
