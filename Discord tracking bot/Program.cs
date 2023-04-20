@@ -9,6 +9,7 @@ using System.Reflection;
 using System.IO;
 using System.Numerics;
 using System.Threading.Channels;
+using System.Text;
 
 
 // See https://aka.ms/new-console-template for more information
@@ -18,8 +19,8 @@ public class Program
 {
     public static Task Main(string[] args) => new Program().MainAsync();
     private DiscordSocketClient? _client;
-    //private string path = System.IO.Directory.GetCurrentDirectory().ToString() + @"\Players Log.txt";
-    private string path = System.IO.Directory.GetCurrentDirectory().ToString() + @"\Players Log Test.txt";
+    private string path = System.IO.Directory.GetCurrentDirectory().ToString() + @"\Players Log.txt";
+    //private string path = System.IO.Directory.GetCurrentDirectory().ToString() + @"\Players Log Test.txt";
 
 
     public async Task MainAsync()
@@ -63,6 +64,7 @@ public class Program
                 var channelId = socketMessage.Channel.Id.ToString();
                 var channel = _client.GetChannel(Convert.ToUInt64(channelId));
                 var socketChannel = (ISocketMessageChannel)channel;
+                string Board = " ";
                 List<string> workingList = new List<string>();
                 //Do Something and send a response here.
                 //socketChannel.SendMessageAsync("YOUR RESPONSE");
@@ -83,14 +85,10 @@ public class Program
 
                 if (socketMessage.Content.ToString().ToUpper().Contains("LEADER"))
                 {
-                    List<string> report = PostScores();
+                    string report = PostScores();
                     await socketChannel.SendMessageAsync("Here is the Current Leaderboard");
                     await socketChannel.SendMessageAsync("===============================");
-                    for (int i = 0; i < report.Count; i++)
-                    {
-                        Thread.Sleep(750);
-                        await socketChannel.SendMessageAsync(report[i]);
-                    }
+                    await socketChannel.SendMessageAsync(report);
                 }
                 if (socketMessage.Content.ToString().ToUpper().Contains("KILO"))
                 {
@@ -211,15 +209,16 @@ public class Program
         }
     }
 
-    public List<string> PostScores()
+    public string PostScores()
     {
-        List<string> FileRead = new List<string>();
+        string FileRead = " ";
         using (StreamReader sr = new StreamReader(path))
         {
             while (sr.Peek() >= 0)
             {
-                FileRead.Add(sr.ReadLine());
+                FileRead += sr.ReadLine() + System.Environment.NewLine;
             }
+            Console.WriteLine(FileRead);
             sr.Close();
             return FileRead;
         }
