@@ -25,15 +25,16 @@ public class FileService
         return File.ReadAllText(_path);
     }
 
-    public void DeleteSuggestion(int index)
+    public string DeleteSuggestion(int index)
     {
         var lines = File.ReadAllLines(_path).ToList();
         if (index < 0 || index > lines.Count)
             throw new ArgumentOutOfRangeException(nameof(index), "Invalid suggestion index.");
-
+        string deletedLine = lines[index - 1];
         lines.RemoveAt(index - 1);
         File.WriteAllLines(_path, lines);
         _suggestionCount = File.ReadAllLines(_path).Length;
+        return deletedLine;
     }
 
     public void SortAndReindexSuggestions()

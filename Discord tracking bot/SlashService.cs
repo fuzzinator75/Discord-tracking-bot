@@ -13,9 +13,9 @@
             return _fileService.GetAllSuggestions();
         }
 
-        public void DeleteSuggestion(int index)
+        public string DeleteSuggestion(int index)
         {
-            _fileService.DeleteSuggestion(index);
+            return _fileService.DeleteSuggestion(index);
         }
 
 
