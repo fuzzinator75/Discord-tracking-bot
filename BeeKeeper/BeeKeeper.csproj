@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="3.10.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
   </ItemGroup>
 
 </Project>

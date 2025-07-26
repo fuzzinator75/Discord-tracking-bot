@@ -49,4 +49,5 @@ public class FileService
             .ToArray();
         File.WriteAllLines(_path, sortedLines);
         Console.WriteLine("Lines sorted by Submitter and written to Sorted.txt");
-    }}
+    }
+}
