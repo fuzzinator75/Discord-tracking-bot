@@ -362,3 +362,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Discord tracking bot/Jsons/GoogleAPI.json
+/Discord tracking bot/Jsons/GoogleAPI.json
+/Discord tracking bot/GoogleAPI.json

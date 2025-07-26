@@ -7,8 +7,6 @@ public class BotService
 {
     private readonly DiscordSocketClient _client;
     private readonly InteractionService _interactionService;
-    private readonly MessageServices _playerService;
-
     public class Token
     {
         [JsonProperty("token")]
@@ -33,12 +31,11 @@ public class BotService
             AlwaysDownloadUsers = true
         });
         _interactionService = new InteractionService(_client.Rest);
-        _playerService = new MessageServices();
     }
 
     public async Task RunAsync(IServiceProvider services)
     {
-        string dataFromJson = File.ReadAllText("./Token.json");
+        string dataFromJson = File.ReadAllText("./Jsons/Token.json");
         var token = JsonConvert.DeserializeObject<Token>(dataFromJson);
         _client.Log += Log;
         _client.Ready += () => ReadyAsync(services);

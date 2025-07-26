@@ -2,7 +2,12 @@
     public class SlashService
     {
         private readonly FileService _fileService;  
-        public void AddSuggestion(string user, string suggestion)
+
+        public SlashService(FileService fileService)
+        {
+            _fileService = fileService;
+        }
+    public void AddSuggestion(string user, string suggestion)
         {
             _fileService.AddSuggestion(user, suggestion);
         }
@@ -13,9 +18,9 @@
             return _fileService.GetAllSuggestions();
         }
 
-        public void DeleteSuggestion(int index)
+        public string DeleteSuggestion(int index)
         {
-            _fileService.DeleteSuggestion(index);
+            return _fileService.DeleteSuggestion(index);
         }
 
 

@@ -10,9 +10,9 @@ public class Program
     {
         var services = new ServiceCollection()
             .AddSingleton<InteractionService>()
-            .AddSingleton<MessageServices>()
             .AddSingleton<BotService>()
             .AddSingleton<FileService>(new FileService("Suggestions.txt"))
+            .AddSingleton<SlashService>()
             .BuildServiceProvider();
 
         var botService = services.GetRequiredService<BotService>();
