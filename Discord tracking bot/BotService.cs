@@ -14,6 +14,17 @@ public class BotService
         [JsonProperty("token")]
         public string key { get; set; }
     }
+
+    public class GuildOptions
+    {
+        [JsonProperty("guildId")]
+                public ulong GuildId { get; set; }
+        [JsonProperty("adminChannelId")]
+                public ulong AdminChannelId { get; set; }
+        [JsonProperty("botChannelId")]
+                public ulong BotChannelId { get; set; }
+    }
+
     public BotService()
     {
         _client = new DiscordSocketClient(new DiscordSocketConfig

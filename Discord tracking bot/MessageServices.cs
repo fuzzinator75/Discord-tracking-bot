@@ -23,6 +23,7 @@ public class MessageServices
             if (string.IsNullOrWhiteSpace(suggestion))
                 return "Please provide a suggestion after !suggest.";
             _slashService.AddSuggestion(message.Author.ToString(), suggestion);
+            _suggestionService.SortAndReindexSuggestions();
             return "Thank you for your suggestion!";
         }
 
@@ -44,7 +45,7 @@ public class MessageServices
             try
             {
                 _slashService.DeleteSuggestion(index); // User sees 1-based, file is 0-based
-                _suggestionService.OrganizeSuggestions(); 
+                _suggestionService.SortAndReindexSuggestions(); 
                 return $"Suggestion #{index} has been deleted.";
             }
             catch (ArgumentOutOfRangeException)

@@ -1,44 +1,50 @@
+using Discord;
 using Discord.Interactions;
-using Discord.WebSocket;
-using System.Threading.Tasks;
+
 
 public class SlashModule : InteractionModuleBase<SocketInteractionContext>
 {
-    private readonly SlashService _slashService;
+    private readonly FileService _fileService;
+     
 
-
-    public SlashModule(SlashService slashService)
+    public SlashModule(FileService fileService)
     {
-        _slashService = slashService;
+        _fileService = fileService;
     }
 
-    [SlashCommand("suggest1", "Submit a suggestion for admins to review")]
+    [SlashCommand("suggest", "Submit a suggestion for admins to review")]
     public async Task Suggest(string suggestion)
     {
-        _slashService.AddSuggestion(Context.User.ToString(), suggestion);
-        await RespondAsync("Thank you for your suggestion!");
+        _fileService.AddSuggestion(Context.User.ToString(), suggestion);
+        await RespondAsync("Thank you for your suggestion!",ephemeral:true);
+        _fileService.SortAndReindexSuggestions();
     }
 
-    [SlashCommand("review-suggestions1", "Review all submitted suggestions")]
+    [SlashCommand("review-suggestions", "Review all submitted suggestions")]
     public async Task ReviewSuggestions()
     {
-        var suggestions = _slashService.GetAllSuggestions();
-        await RespondAsync(string.IsNullOrWhiteSpace(suggestions)
+        var adminChannel = Context.Client.GetChannel(1398459684012425267) as ITextChannel;
+        var suggestions = _fileService.GetAllSuggestions();
+        await adminChannel.SendMessageAsync(string.IsNullOrWhiteSpace(suggestions)
             ? "No suggestions have been submitted yet."
             : suggestions);
+        await RespondAsync($"Please check {adminChannel.Name}",ephemeral:true);
     }
 
-    [SlashCommand("delete-suggestion1", "Delete a suggestion by its index")]
+    [SlashCommand("delete-suggestion", "Delete a suggestion by its index")]
     public async Task DeleteSuggestion(int index)
     {
         try
         {
-            _slashService.DeleteSuggestion(index);
-            await RespondAsync($"Suggestion #{index} has been deleted.");
+            var adminChannel = Context.Client.GetChannel(1398459684012425267) as ITextChannel;
+            _fileService.DeleteSuggestion(index);
+            await adminChannel.SendMessageAsync($"Suggestion #{index} has been deleted.");
+            _fileService.SortAndReindexSuggestions();
+            await RespondAsync($"Please check {adminChannel.Name}", ephemeral: true);
         }
         catch
         {
-            await RespondAsync("Invalid suggestion index.");
+            await RespondAsync("Invalid suggestion index.", ephemeral:true);
         }
     }
 }
