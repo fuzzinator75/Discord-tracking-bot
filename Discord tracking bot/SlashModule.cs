@@ -21,6 +21,7 @@ public class SlashModule : InteractionModuleBase<SocketInteractionContext>
         _slashService.AddSuggestion(Context.User.ToString(), suggestion);
         await RespondAsync("Thank you for your suggestion!", ephemeral: true);
     }
+
     [EnabledInDm(false)]
     [RequireUserPermission(GuildPermission.Administrator)]
     [SlashCommand("review-suggestions", "Review all submitted suggestions")]
@@ -33,6 +34,7 @@ public class SlashModule : InteractionModuleBase<SocketInteractionContext>
             : suggestions);
         await RespondAsync("Suggestions have been sent to the admin channel.", ephemeral: true);
     }
+
     [EnabledInDm(false)]
     [RequireUserPermission(GuildPermission.Administrator)]
     [SlashCommand("delete-suggestion", "Delete a suggestion by its index")]
@@ -48,5 +50,34 @@ public class SlashModule : InteractionModuleBase<SocketInteractionContext>
         {
             await RespondAsync("Invalid suggestion index.");
         }
+    }
+
+    [EnabledInDm(false)]
+    [RequireUserPermission(GuildPermission.Administrator)]
+    [SlashCommand("reccomended-people", "Get a list of recommended people to invite by user")]
+    public async Task ReccomendedPeople(string user)
+    {
+        List<string> reccomendedPeople = _slashService.GetReccomendedPeople(user);
+        if (reccomendedPeople.Count == 0)
+        {
+            await RespondAsync("No recommendations found for this user.", ephemeral: true);
+        }
+        else
+        {
+            var channel = Context.Guild.GetTextChannel(_adminChannel);
+            var response = string.Join("\n", reccomendedPeople);
+            await RespondAsync("Reccomendations dropped in Admin-Chat", ephemeral: true);
+            await channel.SendMessageAsync($"Recommended people for {user}:\n{response}");
+        }
+    }
+
+    [EnabledInDm(false)]
+    [RequireUserPermission(GuildPermission.Administrator)]
+    [SlashCommand("reccomend-someone", "Add a recommended person for a user")]
+    public async Task AddReccomendedPerson([Summary("persons-name", "whats their Discord Handle?")]string reccomendedPerson)
+    {
+        string user = Context.User.Username;
+        string response = _slashService.AddReccomendedPerson(user, reccomendedPerson);
+        await RespondAsync(response, ephemeral: true);
     }
 }

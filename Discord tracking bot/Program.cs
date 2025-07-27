@@ -13,6 +13,7 @@ public class Program
             .AddSingleton<BotService>()
             .AddSingleton<FileService>(new FileService("Suggestions.txt"))
             .AddSingleton<SlashService>()
+            .AddSingleton<SheetService>()
             .BuildServiceProvider();
 
         var botService = services.GetRequiredService<BotService>();
