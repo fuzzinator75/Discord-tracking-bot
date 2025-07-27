@@ -1,6 +1,7 @@
 using Discord;
 using Discord.WebSocket;
 using Discord.Interactions;
+using Discord.Rest;
 using Newtonsoft.Json;
 
 public class BotService
@@ -22,7 +23,6 @@ public class BotService
         [JsonProperty("botChannelId")]
                 public ulong BotChannelId { get; set; }
     }
-
     public BotService()
     {
         _client = new DiscordSocketClient(new DiscordSocketConfig
@@ -33,8 +33,21 @@ public class BotService
         _interactionService = new InteractionService(_client.Rest);
     }
 
+    public async Task WipeGlobalCommandsAsync(DiscordSocketClient client)
+    {
+        string dataFromJson = File.ReadAllText("./Jsons/Token.json");
+        var token = JsonConvert.DeserializeObject<Token>(dataFromJson);
+        var app = await client.GetApplicationInfoAsync();
+        var restClient = new DiscordRestClient();
+        await restClient.LoginAsync(TokenType.Bot, token.key);
+
+        // Overwrite global commands with an empty list
+        object value = restClient.DeleteAllGlobalCommandsAsync();
+    }
+
     public async Task RunAsync(IServiceProvider services)
     {
+        
         string dataFromJson = File.ReadAllText("./Jsons/Token.json");
         var token = JsonConvert.DeserializeObject<Token>(dataFromJson);
         _client.Log += Log;
@@ -42,6 +55,7 @@ public class BotService
         _client.InteractionCreated += interaction => HandleInteraction(interaction,services);
         await _client.LoginAsync(TokenType.Bot, token.key);
         await _client.StartAsync();
+        //await WipeGlobalCommandsAsync(_client);
         await Task.Delay(-1);
     }
 

@@ -2,11 +2,16 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>Discord_tracking_bot</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="GoogleAPI.json" />
+    <None Remove="Token.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
@@ -14,6 +19,8 @@
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="3.10.0" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.70.0" />
+    <PackageReference Include="Google.Apis.Sheets.v4" Version="1.70.0.3819" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.7" />
   </ItemGroup>
 
